@@ -2,7 +2,7 @@ import { Client, Events, GatewayIntentBits, type Interaction, type CacheType } f
 import { Kakiko } from "./commands/kakiko";
 import { DISCORD_TOKEN } from "../secret";
 
-const client: Client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client: Client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildWebhooks, GatewayIntentBits.GuildMembers] });
 
 const onClientReady = () => {
     console.log("Client is ready.")
@@ -14,7 +14,7 @@ const onKakiko = async (interaction: Interaction<CacheType>) => {
     try {
         const modal = Kakiko.getModal(interaction);
 
-        if (modal === undefined) throw Error("Interaction is unvalid.")
+        if (modal === undefined) throw Error("Interaction is invalid.")
         
         await interaction.showModal(modal);
     } catch (e) {

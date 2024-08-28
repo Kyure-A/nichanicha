@@ -7,7 +7,7 @@ export const Kakiko = {
         .setName("kakiko")
         .setDescription("書き込み")
         .addStringOption(o => o.setName("name").setDescription("名前 (省略可)").setRequired(false))
-        .addStringOption(o => o.setName("discordId").setDescription("Discord ID (省略可)").setRequired(false)),
+        .addStringOption(o => o.setName("discord_id").setDescription("Discord ID (省略可)").setRequired(false)),
 
     getModal: (interaction: CommandInteraction): ModalBuilder | undefined  => {
         if (!interaction.isChatInputCommand()) return undefined;
