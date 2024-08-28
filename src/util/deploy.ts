@@ -3,22 +3,21 @@ import { REST, Routes } from "discord.js";
 import { APP_ID, GUILD_ID, DISCORD_TOKEN } from "../../secret";
 import { Suretate } from "../commands/sureTate";
 
-const commands = [
-    Kakiko.data.toJSON(),
-    Suretate.data.toJSON()
-]
+const commands = [Kakiko.data.toJSON(), Suretate.data.toJSON()];
 
 const main = async () => {
-    const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN)
-    
-    try {
-        await rest.put(Routes.applicationGuildCommands(APP_ID, GUILD_ID), { body: commands })
+  const rest = new REST({ version: "10" }).setToken(DISCORD_TOKEN);
 
-        console.log("Commands are deployed.")
-    } catch (e) {
-        console.error("Error occured: ");
-        console.error(e);
-    }
-}
+  try {
+    await rest.put(Routes.applicationGuildCommands(APP_ID, GUILD_ID), {
+      body: commands,
+    });
 
-main()
+    console.log("Commands are deployed.");
+  } catch (e) {
+    console.error("Error occured: ");
+    console.error(e);
+  }
+};
+
+main();

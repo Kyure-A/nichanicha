@@ -1,95 +1,135 @@
 import { fetch } from "bun";
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SlashCommandBuilder, type Interaction, InteractionResponse, InteractionType, CommandInteraction, ModalSubmitInteraction, ChannelType } from "discord.js";
+import {
+  ActionRowBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  SlashCommandBuilder,
+  type Interaction,
+  InteractionResponse,
+  InteractionType,
+  CommandInteraction,
+  ModalSubmitInteraction,
+  ChannelType,
+} from "discord.js";
 import { WEBHOOK_URL } from "../../secret";
 
 export const Kakiko = {
-    data: new SlashCommandBuilder()
-        .setName("kakiko")
-        .setDescription("書き込み")
-        .addStringOption(o => o.setName("name").setDescription("名前 (省略可)").setRequired(false))
-        .addStringOption(o => o.setName("discord_id").setDescription("Discord ID (省略可)").setRequired(false)),
+  data: new SlashCommandBuilder()
+    .setName("kakiko")
+    .setDescription("書き込み")
+    .addStringOption((o) =>
+      o.setName("name").setDescription("名前 (省略可)").setRequired(false),
+    )
+    .addStringOption((o) =>
+      o
+        .setName("discord_id")
+        .setDescription("Discord ID (省略可)")
+        .setRequired(false),
+    ),
 
-    getModal: (interaction: CommandInteraction): ModalBuilder | undefined  => {
-        if (!interaction.isChatInputCommand()) return undefined;
-        if (interaction.commandName !== "kakiko") return undefined;
+  getModal: (interaction: CommandInteraction): ModalBuilder | undefined => {
+    if (!interaction.isChatInputCommand()) return undefined;
+    if (interaction.commandName !== "kakiko") return undefined;
 
-        const name = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("name").setLabel("名前 (省略可)").setStyle(TextInputStyle.Short).setRequired(false));
-        const id = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("discordId").setLabel("Discord ID (省略可)").setStyle(TextInputStyle.Short).setRequired(false));
-        const body = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("body").setLabel("内容").setStyle(TextInputStyle.Paragraph));
-        
-        const modal = new ModalBuilder().setCustomId("kakiko").setTitle("書き込み").addComponents(name, id, body);
+    const name = new ActionRowBuilder<TextInputBuilder>().addComponents(
+      new TextInputBuilder()
+        .setCustomId("name")
+        .setLabel("名前 (省略可)")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false),
+    );
+    const id = new ActionRowBuilder<TextInputBuilder>().addComponents(
+      new TextInputBuilder()
+        .setCustomId("discordId")
+        .setLabel("Discord ID (省略可)")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false),
+    );
+    const body = new ActionRowBuilder<TextInputBuilder>().addComponents(
+      new TextInputBuilder()
+        .setCustomId("body")
+        .setLabel("内容")
+        .setStyle(TextInputStyle.Paragraph),
+    );
 
-        return modal;
-    },
+    const modal = new ModalBuilder()
+      .setCustomId("kakiko")
+      .setTitle("書き込み")
+      .addComponents(name, id, body);
 
-    postModal: async (interaction: ModalSubmitInteraction) => {
-        if (!interaction.isModalSubmit()) return;
-        if (interaction.channelId === null) return;
-        
-        const name = interaction.fields.getTextInputValue("name");
-        const id = interaction.fields.getTextInputValue("discordId");
-        const body = interaction.fields.getTextInputValue("body");
+    return modal;
+  },
 
-        const rawName = interaction.user.username;
-        const rawId = interaction.user.id;
+  postModal: async (interaction: ModalSubmitInteraction) => {
+    if (!interaction.isModalSubmit()) return;
+    if (interaction.channelId === null) return;
 
-        const fusianaOrName = ((name: string) => {
-            const fusianaStr = ["fusianasan", "山崎渉"]
-            const isFusiana = !!fusianaStr.filter(x => x === name).length;
+    const name = interaction.fields.getTextInputValue("name");
+    const id = interaction.fields.getTextInputValue("discordId");
+    const body = interaction.fields.getTextInputValue("body");
 
-            return isFusiana ? rawName : name;
-        })(name);
+    const rawName = interaction.user.username;
+    const rawId = interaction.user.id;
 
-        const fusianaOrId = ((name: string) => {
-            const fusianaStr = ["fusianasan", "山崎渉"]
-            const isFusiana = !!fusianaStr.filter(x => x === name).length;
+    const fusianaOrName = ((name: string) => {
+      const fusianaStr = ["fusianasan", "山崎渉"];
+      const isFusiana = !!fusianaStr.filter((x) => x === name).length;
 
-            return isFusiana ? rawId : id;
-        })(name);
+      return isFusiana ? rawName : name;
+    })(name);
 
-        const threadId = (() => {
-            if (!interaction.channel || !interaction.channel.isThread()) return "";
-            return interaction.channel.id;
-        })();
-        
-        const url = (() => {
-            const u = new URL(WEBHOOK_URL);
-            
-            u.searchParams.set("thread_id", threadId)
-            return u.href;
-        })();
+    const fusianaOrId = ((name: string) => {
+      const fusianaStr = ["fusianasan", "山崎渉"];
+      const isFusiana = !!fusianaStr.filter((x) => x === name).length;
 
-        const messageCount = (async () => {
-            if (interaction.guild === null) return -1;
-            const thread = await interaction.guild.channels.fetch(threadId)
-            if (thread === null || thread.type !== ChannelType.PublicThread) return -1;
-            const count = thread.messageCount;
-            if (count === null) return -1;
-            return count + 1;
-        })();
+      return isFusiana ? rawId : id;
+    })(name);
 
-        const ketaAwase = (num: number) => {
-            const strNum = num.toString();
-            return "0000".substring(strNum.length) + strNum
-        }
+    const threadId = (() => {
+      if (!interaction.channel || !interaction.channel.isThread()) return "";
+      return interaction.channel.id;
+    })();
 
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: `${ketaAwase(await messageCount)} ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2)}`,
-                    content: body
-                })
-            })
+    const url = (() => {
+      const u = new URL(WEBHOOK_URL);
 
-            console.log("Modal is sent")
-            console.log(await response.json())
-        } catch (e) {
-            console.error("Webhook error")
-            console.error(e);
-        }
+      u.searchParams.set("thread_id", threadId);
+      return u.href;
+    })();
+
+    const messageCount = (async () => {
+      if (interaction.guild === null) return -1;
+      const thread = await interaction.guild.channels.fetch(threadId);
+      if (thread === null || thread.type !== ChannelType.PublicThread)
+        return -1;
+      const count = thread.messageCount;
+      if (count === null) return -1;
+      return count + 1;
+    })();
+
+    const ketaAwase = (num: number) => {
+      const strNum = num.toString();
+      return "0000".substring(strNum.length) + strNum;
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: `${ketaAwase(await messageCount)} ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2)}`,
+          content: body,
+        }),
+      });
+
+      console.log("Modal is sent");
+      console.log(await response.json());
+    } catch (e) {
+      console.error("Webhook error");
+      console.error(e);
     }
-}
+  },
+};
