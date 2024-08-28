@@ -1,5 +1,5 @@
 import { fetch } from "bun";
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SlashCommandBuilder, type Interaction, InteractionResponse, InteractionType, CommandInteraction, ModalSubmitInteraction } from "discord.js";
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SlashCommandBuilder, type Interaction, InteractionResponse, InteractionType, CommandInteraction, ModalSubmitInteraction, ChannelType } from "discord.js";
 import { WEBHOOK_URL } from "../../secret";
 
 export const Kakiko = {
@@ -46,18 +46,32 @@ export const Kakiko = {
 
             return isFusiana ? rawId : id;
         })(name);
+
+        const threadId = (() => {
+            if (!interaction.channel || !interaction.channel.isThread()) return "";
+            return interaction.channel.id;
+        })();
         
         const url = (() => {
             const u = new URL(WEBHOOK_URL);
-
-            const threadId = (() => {
-                if (!interaction.channel || !interaction.channel.isThread()) return "";
-                return interaction.channel.id;
-            })();
             
             u.searchParams.set("thread_id", threadId)
             return u.href;
         })();
+
+        const messageCount = (async () => {
+            if (interaction.guild === null) return -1;
+            const thread = await interaction.guild.channels.fetch(threadId)
+            if (thread === null || thread.type !== ChannelType.PublicThread) return -1;
+            const count = thread.messageCount;
+            if (count === null) return -1;
+            return count + 1;
+        })();
+
+        const ketaAwase = (num: number) => {
+            const strNum = num.toString();
+            return "0000".substring(strNum.length) + strNum
+        }
 
         try {
             const response = await fetch(url, {
@@ -66,7 +80,7 @@ export const Kakiko = {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    username: `${fusianaOrName || "名無しさん"} ID: ${fusianaOrId}`,
+                    username: `${ketaAwase(await messageCount)} ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2)}`,
                     content: body
                 })
             })

@@ -1,9 +1,11 @@
 import { Kakiko } from "../commands/kakiko";
 import { REST, Routes } from "discord.js";
 import { APP_ID, GUILD_ID, DISCORD_TOKEN } from "../../secret";
+import { Suretate } from "../commands/sureTate";
 
 const commands = [
-    Kakiko.data.toJSON()
+    Kakiko.data.toJSON(),
+    Suretate.data.toJSON()
 ]
 
 const main = async () => {
