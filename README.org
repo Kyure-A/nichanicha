@@ -1,0 +1,9 @@
+** Usage
+*** Setup server
+#+begin_src
+  bun server
+#+end_src
+*** Deploy commands
+#+begin_src
+  bun deploy
+#+end_src
