@@ -17,6 +17,8 @@ const onKakiko = async (interaction: Interaction<CacheType>) => {
         if (modal === undefined) throw Error("Interaction is invalid.")
         
         await interaction.showModal(modal);
+
+        console.log("Modal is shown")
     } catch (e) {
         console.error(e);
         
@@ -35,6 +37,7 @@ const onKakikoModal = async (interaction: Interaction<CacheType>) => {
     
     try {
         await Kakiko.postModal(interaction);
+        console.log("Modal is posted")
         
     } catch (e) {
         console.error(e);

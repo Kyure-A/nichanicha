@@ -18,3 +18,5 @@ const main = async () => {
         console.error(e);
     }
 }
+
+main()

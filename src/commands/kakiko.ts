@@ -13,8 +13,8 @@ export const Kakiko = {
         if (!interaction.isChatInputCommand()) return undefined;
         if (interaction.commandName !== "kakiko") return undefined;
 
-        const name = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("name").setLabel("名前 (省略可)").setStyle(TextInputStyle.Short));
-        const id = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("discordId").setLabel("Discord ID (省略可)").setStyle(TextInputStyle.Short));
+        const name = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("name").setLabel("名前 (省略可)").setStyle(TextInputStyle.Short).setRequired(false));
+        const id = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("discordId").setLabel("Discord ID (省略可)").setStyle(TextInputStyle.Short).setRequired(false));
         const body = new ActionRowBuilder<TextInputBuilder>().addComponents(new TextInputBuilder().setCustomId("body").setLabel("内容").setStyle(TextInputStyle.Paragraph));
         
         const modal = new ModalBuilder().setCustomId("kakiko").setTitle("書き込み").addComponents(name, id, body);
@@ -57,17 +57,22 @@ export const Kakiko = {
             
             u.searchParams.set("thread_id", threadId)
             return u.href;
-        })(); 
+        })();
 
         try {
-            await fetch(url, {
+            const response = await fetch(url, {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify({
                     username: `${fusianaOrName || "名無しさん"} ID: ${fusianaOrId}`,
                     content: body
                 })
             })
-            
+
+            console.log("Modal is sent")
+            console.log(await response.json())
         } catch (e) {
             console.error("Webhook error")
             console.error(e);
