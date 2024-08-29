@@ -5,7 +5,7 @@ import {
   TextInputStyle,
   SlashCommandBuilder,
   type CommandInteraction,
-  ModalSubmitInteraction,
+  type ModalSubmitInteraction,
   WebhookClient,
 } from "discord.js";
 import { WEBHOOK_ID, WEBHOOK_TOKEN } from "../../secret";
@@ -69,22 +69,22 @@ export const Suretate = {
     const rawName = interaction.user.username;
     const rawId = interaction.user.id;
 
-      try {
-          const response = new WebhookClient({
-              id: WEBHOOK_ID,
-              token: WEBHOOK_TOKEN,
-          }).send({
-              content: body,
-              threadName: threadName,
-              username: `0001 ${fusianaOrName(name, rawName) || "名無しさん"} ID: ${fusianaOrId(name, rawId, id) || generateId(interaction.user.username)}`,
-          });
+    try {
+      const response = new WebhookClient({
+        id: WEBHOOK_ID,
+        token: WEBHOOK_TOKEN,
+      }).send({
+        content: body,
+        threadName: threadName,
+        username: `0001 ${fusianaOrName(name, rawName) || "名無しさん"} ID: ${fusianaOrId(name, rawId, id) || generateId(interaction.user.username)}`,
+      });
 
-          console.log("Suretate Modal is sent");
+      console.log("Suretate Modal is sent");
 
-          interaction.deferUpdate();
-      } catch (e) {
-          console.error("Webhook error");
-          console.error(e);
-      }
+      interaction.deferUpdate();
+    } catch (e) {
+      console.error("Webhook error");
+      console.error(e);
+    }
   },
 };

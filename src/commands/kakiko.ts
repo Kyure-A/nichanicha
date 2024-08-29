@@ -8,8 +8,8 @@ import {
   type Interaction,
   InteractionResponse,
   InteractionType,
-  CommandInteraction,
-  ModalSubmitInteraction,
+  type CommandInteraction,
+  type ModalSubmitInteraction,
   ChannelType,
 } from "discord.js";
 import { WEBHOOK_URL } from "../../secret";
