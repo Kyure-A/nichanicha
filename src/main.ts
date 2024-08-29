@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { Kakiko } from "./commands/kakiko";
 import { DISCORD_TOKEN } from "../secret";
-import { Suretate } from "./commands/sureTate";
+import { Suretate } from "./commands/suretate";
 
 const client: Client = new Client({
   intents: [
