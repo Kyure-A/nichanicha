@@ -9,6 +9,8 @@ import {
   WebhookClient,
 } from "discord.js";
 import { WEBHOOK_ID, WEBHOOK_TOKEN } from "../../secret";
+import { fusianaOrId, fusianaOrName } from "../util/fusiana";
+import { generateId } from "../util/genId";
 
 export const Suretate = {
   data: new SlashCommandBuilder()
@@ -67,36 +69,22 @@ export const Suretate = {
     const rawName = interaction.user.username;
     const rawId = interaction.user.id;
 
-    const fusianaOrName = ((name: string) => {
-      const fusianaStr = ["fusianasan", "山崎渉"];
-      const isFusiana = !!fusianaStr.filter((x) => x === name).length;
+      try {
+          const response = new WebhookClient({
+              id: WEBHOOK_ID,
+              token: WEBHOOK_TOKEN,
+          }).send({
+              content: body,
+              threadName: threadName,
+              username: `0001 ${fusianaOrName(name, rawName) || "名無しさん"} ID: ${fusianaOrId(name, rawId, id) || generateId(interaction.user.username)}`,
+          });
 
-      return isFusiana ? rawName : name;
-    })(name);
+          console.log("Suretate Modal is sent");
 
-    const fusianaOrId = ((name: string) => {
-      const fusianaStr = ["fusianasan", "山崎渉"];
-      const isFusiana = !!fusianaStr.filter((x) => x === name).length;
-
-      return isFusiana ? rawId : id;
-    })(name);
-
-    try {
-      const response = new WebhookClient({
-        id: WEBHOOK_ID,
-        token: WEBHOOK_TOKEN,
-      }).send({
-        content: body,
-        threadName: threadName,
-        username: `0001 ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2, 10)}`,
-      });
-
-      console.log("Suretate Modal is sent");
-
-      interaction.deferUpdate();
-    } catch (e) {
-      console.error("Webhook error");
-      console.error(e);
-    }
+          interaction.deferUpdate();
+      } catch (e) {
+          console.error("Webhook error");
+          console.error(e);
+      }
   },
 };

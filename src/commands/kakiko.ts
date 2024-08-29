@@ -13,6 +13,7 @@ import {
   ChannelType,
 } from "discord.js";
 import { WEBHOOK_URL } from "../../secret";
+import { generateId } from "../util/genId";
 
 export const Kakiko = {
   data: new SlashCommandBuilder()
@@ -120,7 +121,7 @@ export const Kakiko = {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: `${ketaAwase(await messageCount)} ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2)}`,
+          username: `${ketaAwase(await messageCount)} ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || generateId(interaction.user.username)}`,
           content: body,
         }),
       });
