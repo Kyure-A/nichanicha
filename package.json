@@ -3,7 +3,7 @@
   "module": "src/main.ts",
   "type": "module",
   "scripts": {
-    "deploy": "bun run src/util/deploy.ts",
+    "deploy": "bun run src/deploy.ts",
     "server": "bun run src/main.ts",
     "format": "biome format --write"
   },
