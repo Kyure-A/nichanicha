@@ -88,10 +88,12 @@ export const Suretate = {
       }).send({
         content: body,
         threadName: threadName,
-        username: `0001 ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2)}`,
+        username: `0001 ${fusianaOrName || "名無しさん"} ID: ${fusianaOrId || Math.random().toString(32).substring(2, 10)}`,
       });
 
-      console.log("Modal is sent");
+      console.log("Suretate Modal is sent");
+
+      interaction.deferUpdate();
     } catch (e) {
       console.error("Webhook error");
       console.error(e);

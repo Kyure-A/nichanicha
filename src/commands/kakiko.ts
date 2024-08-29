@@ -126,6 +126,9 @@ export const Kakiko = {
       });
 
       console.log("Modal is sent");
+
+      interaction.deferUpdate();
+
       console.log(await response.json());
     } catch (e) {
       console.error("Webhook error");
